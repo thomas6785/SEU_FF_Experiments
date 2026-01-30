@@ -1,0 +1,6 @@
+hamming_merger.sv
+hamming_parity_calculator.sv
+hamming_splitter.sv
+hamming_reg_core.sv
+design.sv
+testbench.sv
