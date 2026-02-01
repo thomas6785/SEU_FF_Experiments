@@ -1,1 +1,13 @@
+# Ignore simulation artefacts
 xrun.*
+xcelium.d/
+.simvision/
+.symbolnamelist
+.symbolportinfomap
+waves.shm/
+
+
+# Ignore temporary vim files
+*~
+
+
