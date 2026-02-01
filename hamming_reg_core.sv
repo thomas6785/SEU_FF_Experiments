@@ -19,6 +19,7 @@ module hamming_reg_core #(
     wire  [parity_bits-1:0] calculated_mem_parity_bits;   // calculated parity bits based on selected_data
     wire  [total_width:1]   extended_wdata;               // wdata extended with parity bits
     wire  [parity_bits-1:0] syndrome;                     // calculated parity bits ^ stored parity. By the properties of Hamming codes, this VALUE is the bit position of the error bit in mem
+    wire  [total_width:1]   correction_mask;              // mask to XOR with 'mem' to get 'corrected_mem' (has a '1' on the erroneous bit, or all 0's i fno SEU's have taken place)
     wire  [total_width:1]   corrected_mem;                // memory with bit correction according to syndrome
     wire  [total_width:1]   mem_next;                     // next value selected for mem (MUX'd between corrected_mem and extended_wdata)
 
@@ -44,7 +45,8 @@ module hamming_reg_core #(
 
     // Calculate syndrome and corrected mem
     assign syndrome = calculated_mem_parity_bits ^ stored_parity;
-    assign corrected_mem = mem ^ (1 << (syndrome - 1)); // property of Hamming codes: the syndrome IS the binary representation of the index of the erroneous bit
+    assign correction_mask = syndrome > 0 ? (1 << (syndrome - 1)) : '0; // if syndrome is zero, no correction is needed. Otherwise the syndrome is the bit position of the error bit (a usefu lproperty of Hamming codes)
+    assign corrected_mem = mem ^ correction_mask; // property of Hamming codes: the syndrome IS the binary representation of the index of the erroneous bit
 
     // ---------------------------------------------------------------
     //   Write logic (determine initial parity bits when writing)
